@@ -31,8 +31,6 @@ for(let i = 0; i < 20; i++) {
 console.log(people)
 const jsonPeople = JSON.stringify(people);
 
-
-
 fs.writeFile('people.json', jsonPeople, (err) => {
     if (err) throw err;
     console.log('The file has been saved!');
