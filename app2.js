@@ -46,46 +46,53 @@ const startApp = async () => {
   if(!answer.start) process.exit();
 
   // ask about input file and watermark type
-  const imageOption = await inquirer.prompt([{
+  const options = await inquirer.prompt([{
     name: 'inputImage',
     type: 'input',
     message: 'What file do you want to mark?',
     default: 'test.jpg',
-  }]);
-
-  const sourcePath = './img/' + imageOption.inputImage;
-    
-  if(!fs.existsSync(sourcePath)) {
-    console.log('Something went wrong... Try again. Wrong path!')
-    process.exit(9)
-  }
-
-  const typeOption = await inquirer.prompt([{
+  }, {
     name: 'watermarkType',
     type: 'list',
     choices: ['Text watermark', 'Image watermark'],
   }]);
 
-  if(typeOption.watermarkType === 'Text watermark') {
+  if(options.watermarkType === 'Text watermark') {
     const text = await inquirer.prompt([{
       name: 'value',
       type: 'input',
       message: 'Type your watermark text:',
     }])
-    typeOption.watermarkText = text.value;
+    options.watermarkText = text.value;
 
-    addTextWatermarkToImage(sourcePath, './img/' + prepareOutputFilename(imageOption.inputImage), typeOption.watermarkText);
-  } else {
+    const sourcePath = './img/' + options.inputImage;
+    
+    if(fs.existsSync(sourcePath)) {
+      addTextWatermarkToImage(sourcePath, './img/' + prepareOutputFilename(options.inputImage), options.watermarkText);
+    } else {
+      console.log('Something went wrong... Try again. Wrong path!')
+      process.exit(9)
+    }
+  }
+  else {
     const image = await inquirer.prompt([{
       name: 'filename',
       type: 'input',
       message: 'Type your watermark name:',
       default: 'logo.png',
     }])
-    typeOption.watermarkImage = image.filename;
+    options.watermarkImage = image.filename;
 
-    addImageWatermarkToImage(sourcePath, './img/' + prepareOutputFilename(imageOption.inputImage), './img/' + typeOption.watermarkImage);
+    const sourcePath = './img/' + options.inputImage;
+
+    if(fs.existsSync(sourcePath)) {
+      addImageWatermarkToImage(sourcePath, './img/' + prepareOutputFilename(options.inputImage), './img/' + options.watermarkImage);
+    } else {
+      console.log('Something went wrong... Try again. Wrong path!')
+      process.exit(9)
+    }
   }
+
 };
 
 startApp();
